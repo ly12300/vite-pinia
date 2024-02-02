@@ -1,6 +1,8 @@
 import {createRouter, createWebHistory, createWebHashHistory} from 'vue-router'
-import { defineAsyncComponent } from 'vue'
+
 import usrLogin from '../store/login.js'
+
+
 const router = createRouter({ 
   // history: createWebHashHistory(),  // hash 模式
   history: createWebHistory(),  // history 模式
@@ -44,7 +46,7 @@ const usrlogin =usrLogin();
     }
   }else{
      // 没有登录，只能去白名单(那些不需要token就可以访问的页面)
-     if (to.path === '/home') {
+     if (to.path === '/home' || to.path === '/hello') {
       next()
     } else {
       console.log('你没有登录，转到登录页')
