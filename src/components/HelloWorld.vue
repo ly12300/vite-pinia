@@ -12,9 +12,6 @@
 
 <script setup>
 import { ref } from 'vue'
-// 首先需要引入一下我们刚刚创建的store
-import useCounter from '../store/login'
-const counterStore = useCounter()
 const count = ref(0)
 </script>
 

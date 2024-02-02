@@ -1,44 +1,47 @@
 import { defineStore } from 'pinia';
-import { getCurrentInstance } from 'vue';
+import axios from 'axios';
+
 
 const useLogin = defineStore('login', {
+  // 持久化设置
+  persist: {
+    // key自定义
+    key: "USER",
+    // 本地存储方式
+    storage: sessionStorage,
+    // 存储内容
+    paths: ["token"]
+  },
+  // 相当ref()
   state: () => ({
-    token: ''
+    token: '',
+   
   }),
-
+// 相当于function()
   actions: {
-    async login(userData) {
-      const instance = getCurrentInstance();
-      if (!instance) {
-        console.error('Cannot access component instance');
-        return;
+    // 传参
+    async login(name,password) {
+      try{
+          const response = await axios.post('http://127.0.0.1:4523/m1/3984196-0-default/usr/login', {
+        name: name,
+        password: password
+      });
+      console.log("回答", response);
+      // 赋值
+      const {token ,code}=response.data;
+      if(code==0){
+        this.token=token
+      }
+      } catch (error) {
+        // 处理请求失败或异常情况
+          console.error('错误:', error);
       }
 
-      const { token, code } = await axios.post('http://192.168.2.2:4523/m1/3984196-0-default/usr/login', userData)
-                                        .then(response => response.data)
-                                        .catch(error => {
-                                          console.error('请求失败:', error.message);
-                                          return {};
-                                        });
-
-      if (code === 0) {
-        // 修改状态中的 token
-        instance.ctx.token = token;
-      } else {
-        // 处理登录失败的情况
-        console.error('登录失败');
-      }
     },
 
     logout() {
-      const instance = getCurrentInstance();
-      if (!instance) {
-        console.error('Cannot access component instance');
-        return;
-      }
-
       // 清空状态中的 token
-      instance.ctx.token = '';
+      this.token = '';
     }
   }
 });

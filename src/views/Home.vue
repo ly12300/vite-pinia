@@ -1,54 +1,48 @@
 <template>
   <div>
     <h1>Login Component</h1>
-    <div v-if="!isLoggedIn">
+    <div >
+      <!-- 双向绑定数据，方便提交 -->
       <input v-model="userdata.name" placeholder="Username">
       <input v-model="userdata.password" placeholder="Password" type="password">
+      <!-- 提交 -->
       <button @click="login">Login</button>
+      <div>
+             <button><router-link to="/hello">跳转</router-link></button>
+      </div>
+ 
     </div>
-    <div v-else>
-      <!-- <p>Welcome, {{ $store.login.token }}</p> -->
-      <button @click="logout">Logout</button>
-    </div>
+
   </div>
 </template>
 
 <script setup>
-import { onMounted, reactive , nextTick} from 'vue';
-import axios from 'axios';
-
+// 获取router实例
+import { useRouter } from 'vue-router';
+import { onMounted, reactive } from 'vue';
+// 导入pinia
+import usrLogin from '../store/login'
+// 响应式数据
 let userdata = reactive({
   name: "",
   password: ""
 });
-
-let isLoggedIn = false;
-
+// 实例化
+const router = useRouter();
+const usrlogin =usrLogin();
+// 登录
 const login = async () => {
-  try {
-    const response = await axios.post('http://127.0.0.1:4523/m1/3984196-0-default/usr/login', {
-      name: userdata.name,
-      password: userdata.password
-    });
-    console.log("回答", response);
-    // 根据接口返回的结果进行相应的操作
-    isLoggedIn = true;
-     // 使用 $nextTick 确保 DOM 更新完成后再执行操作
-     nextTick(() => {
-      // 可以在这里执行需要在视图更新后立即进行的操作
-      console.log("视图已更新");
-    });
-  } catch (error) {
-    console.error("请求错误", error);
+ // 使用 actions，当作函数一样直接调用
+ // login action 定义为了 async 函数，所以它返回一个 Promise
+ await usrlogin.login(userdata.name,userdata.password)
+  if(usrlogin.token){
+    router.push('/')
   }
-};
+}
 
-const logout = () => {
-  // useLogin.logout()
-  isLoggedIn = false;
-};
+
 
 onMounted(() => {
-  console.log("汉化QWQR");
+  console.log("汉化QWQR",usrlogin.token);
 });
 </script>
